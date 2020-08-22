@@ -3,9 +3,8 @@
  *
  */
 
-const int DEBUG_BAUD_RATE = 19200;
 const int MIDI_BAUD_RATE = 31250;
-const int DELAY_BUFFER_SIZE = 3 * 24; // ~500 bytes - multiple of 3 for command, note, velocity
+const byte MIDI_OUTPUT_CHANNEL = 0;
 
 const byte MIDI_STATUS = B10000000;
 const byte MIDI_DATA = B00000000;
@@ -13,93 +12,102 @@ const byte MIDI_DATA = B00000000;
 const byte NOTE_ON = B10010000;
 const byte NOTE_OFF = B10000000;
 
-const byte FAKE_MIDI[] = {
-  NOTE_ON,
-  100,
-  60,
+const byte EMPTY = NOTE_OFF | B1111;
 
-  NOTE_ON,
-  50,
-  80,
+const int DELAY_BUFFER_SIZE = 1024 + 512 + 128 + 4 + 2 + 1;
 
-  NOTE_OFF,
-  100,
-  60,
-
-  NOTE_OFF,
-  50,
-  80
-};
-
-const byte fakeMidiSize = 12;
-byte fakePosition = 0;
-
-byte command = NOTE_OFF;
-byte velocity = 100;
-byte note = 50;
-
-byte currentByte;
-byte status;
-byte dataOne;
-byte dataTwo;
+int currentByte;
 
 byte tempPosition;
-byte tempValue;
 
 byte delayBuffer[DELAY_BUFFER_SIZE];
 int bufferPosition = 0;
 
 void setup(){
-  Serial.begin(DEBUG_BAUD_RATE);
+  for (int i = 0; i < DELAY_BUFFER_SIZE; i = i + 1) {
+    reset(i);
+  }
+  Serial.begin(MIDI_BAUD_RATE);
 }
 
 void loop() {
-  currentByte = nextByte();
-
-  if (currentByte == 0) {
-    return;
+  if (!isEmpty(bufferPosition)) {
+    send(bufferPosition);
+    reset(bufferPosition);
   }
 
-  Serial.println(fakePosition);
-  Serial.println(currentByte);
+  stepBuffer(1);
 
-  if (isStatusByte(currentByte)) {
-    Serial.println("isStatusByte!");
-    handleStatusMessage(currentByte);
+  currentByte = Serial.read();
+  if (currentByte > 0) {
+    store(bufferPosition, currentByte);
   }
-  else if (isDataByte(currentByte)) {
-    Serial.println("isDataByte!");
+  else {
+    reset(bufferPosition);
   }
-  Serial.println("-");
 }
 
+void reset(int position) {
+  store(position, EMPTY);
+}
 
+bool isEmpty(int position) {
+  return retrieve(position) == EMPTY;
+}
+
+/**
+ * Store a single byte in the buffer at given position.
+ */
 void store(int position, byte _value) {
   delayBuffer[position % DELAY_BUFFER_SIZE] = _value;
 }
 
+/**
+ * Store a data message in the buffer, starting at given position.
+ */
+void store(int position, byte _status, byte _dataOne) {
+  store(position, _status);
+  store(position + 1, _dataOne);
+}
+
+/**
+ * Store a status message in the buffer, starting at given position.
+ */
 void store(int position, byte _status, byte _dataOne, byte _dataTwo) {
   store(position, _status);
   store(position + 1, _dataOne);
   store(position + 2, _dataTwo);
 }
 
+/**
+ * Get the value at given position of delay buffer.
+ */
 byte retrieve(int position) {
   tempPosition = position % DELAY_BUFFER_SIZE;
-  tempValue = delayBuffer[tempPosition];
-
-  return tempValue;
+  return delayBuffer[tempPosition];
 }
 
+/**
+ * Incremement buffer position by stepSize.
+ */
 void stepBuffer(int stepSize) {
   bufferPosition = (bufferPosition + stepSize) % DELAY_BUFFER_SIZE;
 }
 
+void send(int position) {
+  Serial.write(retrieve(bufferPosition));
+}
+
+byte nextByte() {
+  return Serial.read();
+}
+
+// byte awaitNextByte() {
+//   while (!Serial.available()) {};
+//   return Serial.read();
+// }
+
 bool isStatusByte(byte b) {
-  // Serial.println('+');
-  // Serial.println(b);
-  // Serial.println(b & MIDI_STATUS);
-  // Serial.println('+');
   return (b & MIDI_STATUS) == MIDI_STATUS;
 }
 
@@ -113,42 +121,4 @@ bool isNoteOn(byte b) {
 
 bool isNoteOff(byte b) {
   return (b & NOTE_OFF) == NOTE_OFF;
-}
-
-// void sendDelayedMidi() {
-//   stepBuffer(3);
-//   sendMidi(
-//     retrieveCommand(bufferPosition),
-//     retrieveNote(bufferPosition),
-//     retrieveVelocity(bufferPosition)
-//   );
-// }
-
-void sendMidi(byte status, byte data1, byte data2) {
-  Serial.write(status);
-  Serial.write(data1);
-  Serial.write(data2);
-}
-
-byte nextByte() {
-  if (fakePosition < fakeMidiSize) {
-    byte value = FAKE_MIDI[fakePosition];
-    fakePosition += 1;
-    return value;
-  }
-  return 0;
-  // while (!Serial.available()) {};
-  // return Serial.read();
-}
-
-void handleStatusMessage(byte statusByte) {
-  if (isNoteOn(statusByte)) {
-    Serial.println("isNoteOn!");
-  }
-  else if (isNoteOff(statusByte)) {
-    Serial.println("isNoteOff!");
-  }
-  else {
-    Serial.println("UNKNOWN STATUS");
-  }
 }

@@ -2,6 +2,8 @@
 
 #include <Arduino.h>
 
+const int BAUD_RATE = 31250;
+
 class SerialIO : public IO {
  public:
   SerialIO() {}

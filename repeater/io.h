@@ -15,4 +15,4 @@ class IO {
 
 inline IO* initIO();
 
-#endif
+#endif // IO

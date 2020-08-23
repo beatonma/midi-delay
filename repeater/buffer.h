@@ -1,49 +1,59 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
-#include "types.h"
 #include "midi.h"
+#include "types.h"
 
-void initBuffer();
+const int DELAY_BUFFER_SIZE = 1800;
 
-void reset(int position);
-void reset();
+class Buffer {
+ private:
+  byte delayBuffer[DELAY_BUFFER_SIZE];
+  int bufferPosition = 0;
 
-bool isEmpty(int position);
-bool isEmpty();
+ public:
+  Buffer(){};
+  void initBuffer();
 
-/**
- * Store a single byte in the buffer at given position.
- */
-void store(int position, byte _value);
+  void reset(int position);
+  void reset();
 
-/**
- * Store a single byte in the buffer at bufferPosition.
- */
-void store(byte _value);
+  bool isEmpty(int position);
+  bool isEmpty();
 
-/**
- * Store a data message in the buffer, starting at given position.
- */
-void store(int position, byte _status, byte _dataOne);
+  /**
+   * Store a single byte in the buffer at given position.
+   */
+  void store(int position, byte _value);
 
-/**
- * Store a status message in the buffer, starting at given position.
- */
-void store(int position, byte _status, byte _dataOne, byte _dataTwo);
+  /**
+   * Store a single byte in the buffer at bufferPosition.
+   */
+  void store(byte _value);
 
-/**
- * Get the value at given position of delay buffer.
- */
-byte retrieve(int position);
+  /**
+   * Store a data message in the buffer, starting at given position.
+   */
+  void store(int position, byte _status, byte _dataOne);
 
-/**
- * Get the value at given position of delay buffer.
- */
-byte retrieve();
+  /**
+   * Store a status message in the buffer, starting at given position.
+   */
+  void store(int position, byte _status, byte _dataOne, byte _dataTwo);
 
-void stepBuffer(int stepSize);
+  /**
+   * Get the value at given position of delay buffer.
+   */
+  byte retrieve(int position);
 
-void stepBuffer();
+  /**
+   * Get the value at given position of delay buffer.
+   */
+  byte retrieve();
 
-#endif
+  void stepBuffer(int stepSize);
+
+  void stepBuffer();
+};
+
+#endif // BUFFER_H

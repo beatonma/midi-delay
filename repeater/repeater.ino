@@ -1,28 +1,33 @@
-#include "midi.h"
+#include "build.h"
 #include "buffer.h"
-#include "serialio.cpp"
-// #include "mockio.cpp"
+#include "midi.h"
 
-int currentByte = 0;
-IO* io = initIO();
+#ifdef DEBUG
+#include "mockio.cpp"
+MockIO io;
+#else
+#include "serialio.cpp"
+SerialIO io;
+#endif
+
+int valueFromIO = 0;
+int valueFromBuffer = 0;
+Buffer buffer;
 
 void setup() {
-  initBuffer();
-  Serial.begin(MIDI_BAUD_RATE);
+  Serial.begin(BAUD_RATE);
+  buffer.initBuffer();
 }
 
 void loop() {
-  if (!isEmpty()) {
-    io->writeByte(retrieve());
-    reset();
+  valueFromIO = io.nextByte();
+  valueFromBuffer = buffer.retrieve();
+
+  if (valueFromIO > 0) {
+    buffer.store(valueFromIO);
   }
 
-  stepBuffer();
+  io.writeByte(valueFromBuffer);
 
-  currentByte = io->nextByte();
-  if (currentByte > 0) {
-    store(currentByte);
-  } else {
-    reset();
-  }
+  buffer.stepBuffer();
 }

@@ -1,26 +1,26 @@
 #include "build.h"
 #include <Arduino.h>
 
-void print(char values[]) {
-    #ifdef DEBUG
-    Serial.print(values);
-    #endif
-}
+// void print(char c[]) {
+//     #ifdef DEBUG
+//     Serial.print(c);
+//     #endif
+// }
 
-void print(char value) {
-    #ifdef DEBUG
-    Serial.print(value);
-    #endif
-}
+// void print(char c) {
+//     #ifdef DEBUG
+//     Serial.print(c);
+//     #endif
+// }
 
-void println(char values[]) {
-    #ifdef DEBUG
-    Serial.println(values);
-    #endif
-}
+// void println(char c[]) {
+//     #ifdef DEBUG
+//     Serial.println(c);
+//     #endif
+// }
 
-void println(char value) {
-    #ifdef DEBUG
-    Serial.println(value);
-    #endif
-}
+// void println(char c) {
+//     #ifdef DEBUG
+//     Serial.println(c);
+//     #endif
+// }

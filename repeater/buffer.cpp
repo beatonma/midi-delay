@@ -20,10 +20,10 @@ bool Buffer::isEmpty() { return isEmpty(bufferPosition); }
  */
 void Buffer::store(int position, byte _value) {
   delayBuffer[position % DELAY_BUFFER_SIZE] = _value;
-  print(F("store["));
-  print(position);
-  print(F("]: "));
-  println(_value);
+  PRINT(F("store["));
+  PRINT(position);
+  PRINT(F("]: "));
+  PRINTLN(_value);
 }
 
 /**
@@ -53,10 +53,10 @@ void Buffer::store(int position, byte _status, byte _dataOne, byte _dataTwo) {
  */
 byte Buffer::retrieve(int position) {
   position = position % DELAY_BUFFER_SIZE;
-  print(F("retrieve["));
-  print(position);
-  print(F("]: "));
-  println(delayBuffer[position]);
+  PRINT(F("retrieve["));
+  PRINT(position);
+  PRINT(F("]: "));
+  PRINTLN(delayBuffer[position]);
   return delayBuffer[position];
 }
 

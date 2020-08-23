@@ -33,10 +33,10 @@ class MockIO : public IO {
     }
 
     _value = MOCK_MIDI[midiPosition % MIDI_LENGTH];
-    print(F("nextByte ["));
-    print(midiPosition);
-    print(F("]: "));
-    println(_value);
+    PRINT(F("nextByte ["));
+    PRINT(midiPosition);
+    PRINT(F("]: "));
+    PRINTLN(_value);
 
     midiPosition = (midiPosition + 1);
 
@@ -46,8 +46,8 @@ class MockIO : public IO {
   byte awaitNextByte() { return 0; }
 
   void writeByte(byte b) {
-    print(F("writeByte: "));
-    println(b);
+    PRINT(F("writeByte: "));
+    PRINTLN(b);
   }
 
   bool isFinished() {

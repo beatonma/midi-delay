@@ -1,5 +1,5 @@
 #include "build.h"
-#include "buffer.h"
+#include "schedulebuffer.h"
 #include "midi.h"
 
 #ifdef DEBUG
@@ -12,22 +12,31 @@ SerialIO io;
 
 int valueFromIO = 0;
 int valueFromBuffer = 0;
-Buffer buffer;
+
+ScheduleBuffer buffer;
 
 void setup() {
   Serial.begin(BAUD_RATE);
-  buffer.initBuffer();
 }
 
 void loop() {
-  valueFromIO = io.nextByte();
+  #ifdef DEBUG
+  if (io.isFinished()) {
+    return;
+  }
+  #endif // DEBUG
+
   valueFromBuffer = buffer.retrieve();
+  valueFromIO = io.nextByte();
+
 
   if (valueFromIO > 0) {
-    buffer.store(valueFromIO);
+    buffer.schedule(valueFromIO);
   }
 
-  io.writeByte(valueFromBuffer);
+  if (valueFromBuffer > 0) {
+    io.writeByte(valueFromBuffer);
+  }
 
-  buffer.stepBuffer();
+  delay(1);
 }

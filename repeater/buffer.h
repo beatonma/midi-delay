@@ -6,6 +6,10 @@
 
 const int DELAY_BUFFER_SIZE = 1800;
 
+/**
+ * A simple cyclic buffer. Written values are retrieved after
+ * the reet of the buffer has been traversed.
+ */
 class Buffer {
  private:
   byte delayBuffer[DELAY_BUFFER_SIZE];

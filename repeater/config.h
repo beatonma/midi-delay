@@ -1,0 +1,8 @@
+#ifndef HARDWARE_CONFIG_H
+#define HARDWARE_CONFIG_H
+
+#define DELAY_POT_PIN 0
+#define DELAY_TIME_MIN 1
+#define DELAY_TIME_MAX 1500
+
+#endif // HARDWARE_CONFIG_H

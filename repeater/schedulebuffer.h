@@ -3,8 +3,8 @@
 
 #include "types.h"
 
-const int SCHEDULE_BUFFER_SIZE = 340;
-const int DELAY_LENGTH = 400;  // milliseconds
+const int SCHEDULE_BUFFER_SIZE = 330;
+const int DELAY_LENGTH = 120;  // Default, milliseconds
 
 class ScheduledByte {
  public:

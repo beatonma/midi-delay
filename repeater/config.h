@@ -3,6 +3,6 @@
 
 #define DELAY_POT_PIN 0
 #define DELAY_TIME_MIN 1
-#define DELAY_TIME_MAX 1500
+#define DELAY_TIME_MAX 600
 
 #endif // HARDWARE_CONFIG_H

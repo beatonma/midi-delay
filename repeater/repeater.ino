@@ -31,13 +31,15 @@ void setup() {
 }
 
 void loop() {
+
+  updateInputHandlers();
+
   #ifdef DEBUG
   if (io.isFinished()) {
     return;
   }
   #endif // DEBUG
 
-  updateInputHandlers();
 
   valueFromBuffer = buffer.retrieve();
   valueFromIO = io.nextByte();
@@ -47,8 +49,9 @@ void loop() {
     buffer.schedule(valueFromIO, delayTime);
   }
 
-  if (valueFromBuffer > 0) {
+  while (valueFromBuffer > 0) {
     io.writeByte(valueFromBuffer);
+    valueFromBuffer = buffer.retrieve();
   }
 
   delay(1);
